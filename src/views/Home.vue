@@ -10,7 +10,7 @@
           <span>电商后台管理系统</span>
         </el-col>
         <el-col :span="1">
-          <a class="logout" href="#">退出</a>
+          <a class="logout" href="#" @click.prevent="handleLogout">退出</a>
         </el-col>
       </el-row>
     </el-header>
@@ -112,6 +112,17 @@ beforeCreate() {
     this.$message.warning('请先登录');
     this.$router.push('/login');
   } 
+},
+methods: {
+  // 退出
+  handleLogout() {
+    // 退出的原理就是，清除sessionStorage中的token
+    sessionStorage.clear();
+    // 提示退出成功
+    this.$message.success('退出成功');
+    // 跳转到登录页面
+    this.$router.push('/login');
+  }
 }
 };
 </script>
