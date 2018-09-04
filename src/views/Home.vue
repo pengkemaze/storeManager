@@ -94,7 +94,11 @@
           </el-submenu>
         </el-menu>
       </el-aside>
-      <el-main>Main</el-main>
+      <!-- 主内容区域 -->
+      <el-main>
+        <!-- 路由占位 -->
+         <router-view></router-view>
+      </el-main>
     </el-container>
   </el-container>
 </template>
