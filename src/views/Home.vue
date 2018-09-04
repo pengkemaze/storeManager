@@ -101,7 +101,18 @@
 
 <script>
 export default {
-
+// 判断是否登录 需要在还没有加载到home页面之前判断是否登录
+// 所以使用钩子函数  beforeCreate
+beforeCreate() {
+  // 获取sessionStorage中存储的token
+  const token = sessionStorage.getItem('token');
+  // 判断token是否存在
+  if (!token) {
+    // 如果token不存在，即没有登录
+    this.$message.warning('请先登录');
+    this.$router.push('/login');
+  } 
+}
 };
 </script>
 
