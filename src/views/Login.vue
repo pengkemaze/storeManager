@@ -10,7 +10,8 @@
         <el-input v-model="formData.username"></el-input>
       </el-form-item>
       <el-form-item label="密码">
-        <el-input v-model="formData.password" type="password"></el-input>
+          <!-- 设置 @keyup.enter.native 之后 可以通过回车登录 -->
+        <el-input @keyup.enter.native="handleLogin" v-model="formData.password" type="password"></el-input>
       </el-form-item>
       <el-form-item>
         <el-button @click="handleLogin" class="login-btn" type="primary">登录</el-button>
@@ -49,6 +50,8 @@ export default {
                     // 记录token
                     // 使用sessionStorage来记录tokens 
                     sessionStorage.setItem('token', response.data.data.token);
+                    // 跳转到home页
+                    this.$router.push('/');
                 } else {
                     // 失败
                     this.$message.error(msg);
