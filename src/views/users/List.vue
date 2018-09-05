@@ -190,16 +190,30 @@ export default {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
           type: 'warning'
-        }).then(() => {
-          this.$message({
-            type: 'success',
-            message: '删除成功!'
-          });
+        }).then(async () => {
+          // 点击确定按钮执行
+          const response = await this.$http.delete(`users/${id}`);
+          // 获取返回的数据，判断删除是否成功
+          const { msg, status} = response.data.meta;
+          if (status === 200) {
+            // 成功
+            this.$message.success(msg);
+            // 如果是最后一页，并且只要一条数据，此时删除数据会出现问题
+            // 如果是最后一页并且表格中只有一条数据，删除后就让页码减一
+            if(this.pagenum > 1 && this.tableData.length === 1) {
+              this.pagenum--;
+            } 
+            // 删除成功刷新表格
+            this.loadData();
+          } else {
+            // 失败
+            this.$message.error(msg);
+          }
         }).catch(() => {
-          this.$message({
-            type: 'info',
-            message: '已取消删除'
-          });          
+          // this.$message({
+          //   type: 'info',
+          //   message: '已取消删除'
+          // });          
         });
     }
   }
