@@ -21,23 +21,37 @@
       border
       stripe
       style="width: 100%">
+      <!-- 序号列 -->
       <el-table-column
       type="index"
       width="50">
       </el-table-column>
+       <!-- prop 绑定对象的属性，当前列的数据-->
       <el-table-column
-        prop="date"
-        label="日期"
-        width="180">
-      </el-table-column>
-      <el-table-column
-        prop="name"
+        prop="username"
         label="姓名"
         width="180">
       </el-table-column>
       <el-table-column
-        prop="address"
-        label="地址">
+        prop="email"
+        label="邮箱"
+        width="180">
+      </el-table-column>
+      <el-table-column
+        prop="mobile"
+        label="电话"
+        width="180">
+      </el-table-column>
+      <el-table-column
+        prop="create_time"
+        label="时间">
+      </el-table-column>
+      <el-table-column
+        prop="mg_state"
+        label="用户状态">
+      </el-table-column>
+      <el-table-column
+        label="操作">
       </el-table-column>
     </el-table>
   </el-card>
@@ -45,39 +59,39 @@
 
 <script>
 export default {
-data() {
-      return {
-        tableData: [{
-          date: '2016-05-03',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1518 弄'
-        }, {
-          date: '2016-05-02',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1518 弄'
-        }, {
-          date: '2016-05-04',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1518 弄'
-        }, {
-          date: '2016-05-01',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1518 弄'
-        }, {
-          date: '2016-05-08',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1518 弄'
-        }, {
-          date: '2016-05-06',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1518 弄'
-        }, {
-          date: '2016-05-07',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1518 弄'
-        }]
-      }
+  data() {
+    return {
+      tableData: []
+    };
+  },
+  created() {
+    // 组件创建完毕，加载数据
+    this.loadData();
+  },
+  methods: {
+    // 异步请求用户列表数据
+    loadData() {
+      // 设置token
+      const token = sessionStorage.getItem('token');
+      // 设置请求头
+      this.$http.defaults.headers.common['Authorization'] = token;
+
+      this.$http
+        .get('users?pagenum=1&pagesize=10')
+        .then((response) => {
+          // 判断response.data.meta.status状态是否为200
+          const {msg, status} = response.data.meta;
+          if (status === 200) {
+            this.tableData = response.data.data.users;
+          } else {
+            this.$message.error(msg);
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+        })
     }
+  }
 };
 </script>
 
