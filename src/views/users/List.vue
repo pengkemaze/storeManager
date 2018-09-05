@@ -70,26 +70,35 @@ export default {
   },
   methods: {
     // 异步请求用户列表数据
-    loadData() {
+    // async  await  ES7语法 用于发送异步请求 少一层嵌套  能够使代码简洁
+    async loadData() {
       // 设置token
       const token = sessionStorage.getItem('token');
       // 设置请求头
       this.$http.defaults.headers.common['Authorization'] = token;
 
-      this.$http
-        .get('users?pagenum=1&pagesize=10')
-        .then((response) => {
-          // 判断response.data.meta.status状态是否为200
-          const {msg, status} = response.data.meta;
+      const response = await this.$http.get('users?pagenum=1&pagesize=10');
+      const {msg, status} = response.data.meta;
+      // 判断获取数据是否ok
           if (status === 200) {
             this.tableData = response.data.data.users;
           } else {
             this.$message.error(msg);
           }
-        })
-        .catch((err) => {
-          console.log(err);
-        })
+      // this.$http
+      //   .get('users?pagenum=1&pagesize=10')
+      //   .then((response) => {
+      //     // 判断response.data.meta.status状态是否为200
+      //     const {msg, status} = response.data.meta;
+      //     if (status === 200) {
+      //       this.tableData = response.data.data.users;
+      //     } else {
+      //       this.$message.error(msg);
+      //     }
+      //   })
+      //   .catch((err) => {
+      //     console.log(err);
+      //   });
     }
   }
 };
