@@ -78,7 +78,7 @@
                通过scope.row获取当前行的数据
            --> 
           <el-button size="mini" type="primary" icon="el-icon-edit" plain></el-button>
-          <el-button size="mini" type="danger" icon="el-icon-delete" plain></el-button>
+          <el-button @click="handleDelete(scope.row.id)" size="mini" type="danger" icon="el-icon-delete" plain></el-button>
           <el-button size="mini" type="success" icon="el-icon-check" plain></el-button>
         </template>
       </el-table-column>
@@ -183,6 +183,24 @@ export default {
       // 搜索功能
     handleSearch() {
       this.loadData();
+    },
+    // 删除用户
+    handleDelete(id) {
+      this.$confirm('此操作将永久删除该文件, 是否继续?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          this.$message({
+            type: 'success',
+            message: '删除成功!'
+          });
+        }).catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已取消删除'
+          });          
+        });
     }
   }
 };
