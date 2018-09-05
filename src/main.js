@@ -5,6 +5,12 @@ import App from './App.vue';
 import router from './router';
 import '@/assets/css/index.css';
 import MyHttp from '@/plugins/MyHttp';
+import moment from 'moment';
+// 过滤器，格式化日期字符串
+// 过滤器在插值表达式和v-bind中才能使用
+Vue.filter('fmtDate', (value, fmtStr) => {
+  return moment(value).format(fmtStr);
+});
 // 注册MyHttp插件
 Vue.use(MyHttp);
 // 注册ElementUI插件

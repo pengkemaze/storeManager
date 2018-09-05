@@ -30,12 +30,12 @@
       <el-table-column
         prop="username"
         label="姓名"
-        width="180">
+        width="150">
       </el-table-column>
       <el-table-column
         prop="email"
         label="邮箱"
-        width="180">
+        width="200">
       </el-table-column>
       <el-table-column
         prop="mobile"
@@ -43,14 +43,32 @@
         width="180">
       </el-table-column>
       <el-table-column
+        width="150"
         prop="create_time"
         label="时间">
+        <!-- 要自定义内容，必须写template，且有属性slot-scope="scope" -->
+        <template slot-scope="scope">
+          {{ scope.row.create_time | fmtDate('YYYY-MM-DD') }}
+        </template>
       </el-table-column>
       <el-table-column
-        prop="mg_state"
+        width="100"
         label="用户状态">
+        <!-- 要是用模板，必须有slot-scope="scope"属性才能呈现内容 -->
+        <template slot-scope="scope">
+          <!-- scope.row 显示当前用户的数据
+               scope.row.mg_state当前用户的状态
+               开关要绑定当前用户的状态
+           -->
+          <el-switch
+          v-model="scope.row.mg_state"
+          active-color="#13ce66"
+          inactive-color="#ff4949">
+          </el-switch>
+        </template>
       </el-table-column>
       <el-table-column
+        width="300"
         label="操作">
         <template slot-scope="scope">
           <!-- 通过scope.$index可以获取当前行的索引
