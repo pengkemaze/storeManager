@@ -13,7 +13,7 @@
         <el-input clearable v-model="searchValue" style="width: 300px" placeholder="请输入内容">
           <el-button @click="handleSearch" slot="append" icon="el-icon-search"></el-button>
        </el-input>
-       <el-button type="success" plain>添加用户</el-button>
+       <el-button @click="addUserDialogFormVisible = true" type="success" plain>添加用户</el-button>
       </el-col>
     </el-row>
     <!-- 表格 -->
@@ -64,6 +64,7 @@
                开关要绑定当前用户的状态
            -->
           <el-switch
+          @change="handleChange(scope.row)"
           v-model="scope.row.mg_state"
           active-color="#13ce66"
           inactive-color="#ff4949">
@@ -104,6 +105,32 @@
       layout="total, sizes, prev, pager, next, jumper"
       :total="total">
     </el-pagination>
+
+    <!-- 添加用户的对话框 -->
+    <el-dialog @close="handleClose" title="添加用户" :visible.sync="addUserDialogFormVisible">
+  <el-form
+    ref="form"
+    :rules="rules"
+    label-width="80px"
+    :model="formData">
+    <el-form-item label="用户名" prop="username">
+      <el-input v-model="formData.username" auto-complete="off"></el-input>
+    </el-form-item>
+    <el-form-item label="密码" prop="password">
+      <el-input v-model="formData.password" auto-complete="off"></el-input>
+    </el-form-item>
+    <el-form-item label="邮箱">
+      <el-input v-model="formData.email" auto-complete="off"></el-input>
+    </el-form-item>
+    <el-form-item label="电话">
+      <el-input v-model="formData.mobile" auto-complete="off"></el-input>
+    </el-form-item>
+  </el-form>
+  <div slot="footer" class="dialog-footer">
+    <el-button @click="addUserDialogFormVisible = false">取 消</el-button>
+    <el-button type="primary" @click="handleAdd">确 定</el-button>
+  </div>
+</el-dialog>
   </el-card>
 </template>
 
@@ -122,7 +149,26 @@ export default {
       // 总条数
       total: 0,
       // 绑定搜索文本框
-      searchValue: ''
+      searchValue: '',
+      addUserDialogFormVisible: false,
+      formData: {
+        username: '',
+        password: '',
+        email: '',
+        mobile: ''
+      },
+      // 表单验证规则
+      rules: {
+        // 用户名验证规则
+        username: [
+          { required: true, message: '请输入用户名', trigger: 'blur' },
+          { min: 3, max: 10, message: '长度在 3 到 10 个字符', trigger: 'blur' }
+        ],
+        password: [
+          { required: true, message: '请输入密码', trigger: 'blur' },
+          { min: 6, max: 12, message: '长度在 6 到 12 个字符', trigger: 'blur' }
+        ]
+      }
     };
   },
   created() {
@@ -210,12 +256,54 @@ export default {
             this.$message.error(msg);
           }
         }).catch(() => {
-          // this.$message({
-          //   type: 'info',
-          //   message: '已取消删除'
-          // });          
+
         });
+    },
+    // 修改用户状态
+    async handleChange(user) {
+      const response = await this.$http.put(`users/${user.id}/state/${user.mg_state}`);
+      const {msg, status} = response.data.meta;
+      if (status === 200) {
+        this.$message.success(msg);
+      } else {
+        this.$message.error(msg);
+      }
+    },
+    // 添加用户
+    handleAdd() {
+      // 表单验证
+      this.$refs.form.validate(async (valid) => {
+          if (!valid) {
+            this.$message.warning('验证失败');
+            return;
+          }
+      // 验证成功，发送异步请求
+      const response = await this.$http.post('users', this.formData);
+      // 获取数据，判断添加是否成功 post提交的成功码是201
+      const {msg, status} = response.data.meta;
+      if (status === 201) {
+        // 用户添加成功提示
+        this.$message.success(msg);
+        // 刷新表格数据
+        this.loadData();
+        // 设置弹出框的addUserDialogFormVisible属性为false关闭弹出框
+        this.addUserDialogFormVisible = false;
+      } else {
+        // 用户添加失败
+        this.$message.error(msg);
+      }
+    });
+    },
+    // 关闭对话框的时候清空文本框内容
+    handleClose() {
+    // 清空文本框 不能用这种方法，容易造成内存泄漏
+    // this.formData = {};
+    // 遍历对象的所有属性，将属性的每一项对应的值清空
+    for (let key in this.formData) {
+      this.formData[key] = '';
+      }
     }
+
   }
 };
 </script>
