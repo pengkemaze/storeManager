@@ -9,8 +9,9 @@
     <!-- 搜索 -->
     <el-row class="row">
       <el-col :span="24">
-        <el-input style="width: 300px" placeholder="请输入内容">
-          <el-button slot="append" icon="el-icon-search"></el-button>
+        <!-- 搜索文本框 -->
+        <el-input clearable v-model="searchValue" style="width: 300px" placeholder="请输入内容">
+          <el-button @click="handleSearch" slot="append" icon="el-icon-search"></el-button>
        </el-input>
        <el-button type="success" plain>添加用户</el-button>
       </el-col>
@@ -119,7 +120,9 @@ export default {
       // 每页条数
       pagesize: 2,
       // 总条数
-      total: 0
+      total: 0,
+      // 绑定搜索文本框
+      searchValue: ''
     };
   },
   created() {
@@ -130,11 +133,13 @@ export default {
     // 异步请求用户列表数据
     // async  await  ES7语法 用于发送异步请求 少一层嵌套  能够使代码简洁
     async loadData() {
+      // 请求开始只要请求就要先loading加载
+      this.loading = true;
       // 设置token
       const token = sessionStorage.getItem('token');
       // 设置请求头
       this.$http.defaults.headers.common['Authorization'] = token;
-      const response = await this.$http.get(`users?pagenum=${this.pagenum}&pagesize=${this.pagesize}`);
+      const response = await this.$http.get(`users?pagenum=${this.pagenum}&pagesize=${this.pagesize}&query=${this.searchValue}`);
       // 请求结束
       this.loading = false;
       const {msg, status} = response.data.meta;
@@ -174,7 +179,11 @@ export default {
       // 当页码发生变化时执行 val就是当前页码
       this.pagenum = val;
       this.loadData();
-      }
+      },
+      // 搜索功能
+    handleSearch() {
+      this.loadData();
+    }
   }
 };
 </script>
