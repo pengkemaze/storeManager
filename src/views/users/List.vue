@@ -52,6 +52,14 @@
       </el-table-column>
       <el-table-column
         label="操作">
+        <template slot-scope="scope">
+          <!-- 通过scope.$index可以获取当前行的索引
+               通过scope.row获取当前行的数据
+           --> 
+          <el-button size="mini" type="primary" icon="el-icon-edit" plain></el-button>
+          <el-button size="mini" type="danger" icon="el-icon-delete" plain></el-button>
+          <el-button size="mini" type="success" icon="el-icon-check" plain></el-button>
+        </template>
       </el-table-column>
     </el-table>
   </el-card>
@@ -85,6 +93,8 @@ export default {
           } else {
             this.$message.error(msg);
           }
+
+      // 异步请求原始写法
       // this.$http
       //   .get('users?pagenum=1&pagesize=10')
       //   .then((response) => {
