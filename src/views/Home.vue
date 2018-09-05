@@ -17,7 +17,7 @@
     <el-container>
       <!-- 侧边栏 -->
       <el-aside width="200px">
-        <!-- unique-opened 设置后只保持一个菜单展开 
+        <!-- unique-opened 设置后只保持一个菜单展开
              router 设置可以路由跳转
         -->
         <el-menu
@@ -107,27 +107,27 @@
 export default {
 // 判断是否登录 需要在还没有加载到home页面之前判断是否登录
 // 所以使用钩子函数  beforeCreate
-beforeCreate() {
+  beforeCreate() {
   // 获取sessionStorage中存储的token
-  const token = sessionStorage.getItem('token');
-  // 判断token是否存在
-  if (!token) {
+    const token = sessionStorage.getItem('token');
+    // 判断token是否存在
+    if (!token) {
     // 如果token不存在，即没有登录
-    this.$message.warning('请先登录');
-    this.$router.push('/login');
-  } 
-},
-methods: {
+      this.$message.warning('请先登录');
+      this.$router.push('/login');
+    }
+  },
+  methods: {
   // 退出
-  handleLogout() {
+    handleLogout() {
     // 退出的原理就是，清除sessionStorage中的token
-    sessionStorage.clear();
-    // 提示退出成功
-    this.$message.success('退出成功');
-    // 跳转到登录页面
-    this.$router.push('/login');
+      sessionStorage.clear();
+      // 提示退出成功
+      this.$message.success('退出成功');
+      // 跳转到登录页面
+      this.$router.push('/login');
+    }
   }
-}
 };
 </script>
 
@@ -152,13 +152,13 @@ methods: {
     color: #333;
     padding: 0;
   }
-  
+
   .el-aside {
     background-color: #D3DCE6;
     color: #333;
     /* text-align: center; */
   }
-  
+
   .el-main {
     background-color: #E9EEF3;
     color: #333;

@@ -77,7 +77,7 @@
         <template slot-scope="scope">
           <!-- 通过scope.$index可以获取当前行的索引
                通过scope.row获取当前行的数据
-           --> 
+           -->
           <el-button @click="handleOpenEditDialog(scope.row)" size="mini" type="primary" icon="el-icon-edit" plain></el-button>
           <el-button @click="handleDelete(scope.row.id)" size="mini" type="danger" icon="el-icon-delete" plain></el-button>
           <el-button @click="testUser" size="mini" type="success" icon="el-icon-check" plain></el-button>
@@ -106,7 +106,7 @@
       :total="total">
     </el-pagination>
 
-    <!-- 添加用户的对话框 
+    <!-- 添加用户的对话框
       close关闭文本框事件 关闭文本框清空表单数据
     -->
   <el-dialog @close="handleClose" title="添加用户" :visible.sync="addUserDialogFormVisible">
@@ -215,14 +215,13 @@ export default {
       this.loading = false;
       const {msg, status} = response.data.meta;
       // 判断获取数据是否ok
-          if (status === 200) {
-            this.tableData = response.data.data.users;
-            // 设置总条数total
-            this.total = response.data.data.total;
-          } else {
-            this.$message.error(msg);
-          }
-
+      if (status === 200) {
+        this.tableData = response.data.data.users;
+        // 设置总条数total
+        this.total = response.data.data.total;
+      } else {
+        this.$message.error(msg);
+      }
       // 异步请求原始写法
       // this.$http
       //   .get('users?pagenum=1&pagesize=10')
@@ -244,45 +243,45 @@ export default {
       // 当页容量发生变化时执行 val就是当前页容量
       this.pagesize = val;
       this.loadData();
-        console.log(`每页 ${val} 条`);
-      },
+      console.log(`每页 ${val} 条`);
+    },
     handleCurrentChange(val) {
       // 当页码发生变化时执行 val就是当前页码
       this.pagenum = val;
       this.loadData();
-      },
-      // 搜索功能
+    },
+    // 搜索功能
     handleSearch() {
       this.loadData();
     },
     // 删除用户
     handleDelete(id) {
       this.$confirm('此操作将永久删除该文件, 是否继续?', '提示', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          type: 'warning'
-        }).then(async () => {
-          // 点击确定按钮执行
-          const response = await this.$http.delete(`users/${id}`);
-          // 获取返回的数据，判断删除是否成功
-          const { msg, status} = response.data.meta;
-          if (status === 200) {
-            // 成功
-            this.$message.success(msg);
-            // 如果是最后一页，并且只要一条数据，此时删除数据会出现问题
-            // 如果是最后一页并且表格中只有一条数据，删除后就让页码减一
-            if(this.pagenum > 1 && this.tableData.length === 1) {
-              this.pagenum--;
-            } 
-            // 删除成功刷新表格
-            this.loadData();
-          } else {
-            // 失败
-            this.$message.error(msg);
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(async () => {
+        // 点击确定按钮执行
+        const response = await this.$http.delete(`users/${id}`);
+        // 获取返回的数据，判断删除是否成功
+        const {msg, status} = response.data.meta;
+        if (status === 200) {
+          // 成功
+          this.$message.success(msg);
+          // 如果是最后一页，并且只要一条数据，此时删除数据会出现问题
+          // 如果是最后一页并且表格中只有一条数据，删除后就让页码减一
+          if (this.pagenum > 1 && this.tableData.length === 1) {
+            this.pagenum--;
           }
-        }).catch(() => {
+          // 删除成功刷新表格
+          this.loadData();
+        } else {
+          // 失败
+          this.$message.error(msg);
+        }
+      }).catch(() => {
 
-        });
+      });
     },
     // 修改用户状态
     async handleChange(user) {
@@ -298,34 +297,34 @@ export default {
     handleAdd() {
       // 表单验证
       this.$refs.form.validate(async (valid) => {
-          if (!valid) {
-            this.$message.warning('验证失败');
-            return;
-          }
-      // 验证成功，发送异步请求
-      const response = await this.$http.post('users', this.formData);
-      // 获取数据，判断添加是否成功 post提交的成功码是201
-      const {msg, status} = response.data.meta;
-      if (status === 201) {
+        if (!valid) {
+          this.$message.warning('验证失败');
+          return;
+        }
+        // 验证成功，发送异步请求
+        const response = await this.$http.post('users', this.formData);
+        // 获取数据，判断添加是否成功 post提交的成功码是201
+        const {msg, status} = response.data.meta;
+        if (status === 201) {
         // 用户添加成功提示
-        this.$message.success(msg);
-        // 刷新表格数据
-        this.loadData();
-        // 设置弹出框的addUserDialogFormVisible属性为false关闭弹出框
-        this.addUserDialogFormVisible = false;
-      } else {
+          this.$message.success(msg);
+          // 刷新表格数据
+          this.loadData();
+          // 设置弹出框的addUserDialogFormVisible属性为false关闭弹出框
+          this.addUserDialogFormVisible = false;
+        } else {
         // 用户添加失败
-        this.$message.error(msg);
-      }
-     });
+          this.$message.error(msg);
+        }
+      });
     },
     // 关闭对话框的时候清空文本框内容
     handleClose() {
     // 清空文本框 不能用这种方法，容易造成内存泄漏
     // this.formData = {};
     // 遍历对象的所有属性，将属性的每一项对应的值清空
-    for (let key in this.formData) {
-      this.formData[key] = '';
+      for (let key in this.formData) {
+        this.formData[key] = '';
       }
     },
     // 点击编辑按钮，打开修改用户的对话框
@@ -346,9 +345,8 @@ export default {
         email: this.formData.email,
         mobile: this.formData.mobile
       });
-
-      const { msg, status} = response.data.meta;
-      if(status === 200) {
+      const {msg, status} = response.data.meta;
+      if (status === 200) {
         // 成功之后
         // 关闭对话框
         this.editUserDialogFormVisible = false;
@@ -358,7 +356,7 @@ export default {
         this.$message.success(msg);
       } else {
         this.$message.error(msg);
-      }
+      };
     }
   }
 };
