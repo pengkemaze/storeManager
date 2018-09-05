@@ -16,7 +16,9 @@
       </el-col>
     </el-row>
     <!-- 表格 -->
+    <!-- v-loading是elementui自定义指令，显示加载转圈效果 -->
     <el-table
+      v-loading="loading"
       :data="tableData"
       border
       stripe
@@ -80,6 +82,27 @@
         </template>
       </el-table-column>
     </el-table>
+    <!-- 分页 -->
+    <!-- 事件
+      size-change：页容量发生改变的时候执行
+      current-change：当前页码发生改变的时候执行
+
+      属性
+      page-sizes：分页选择器显示的内容
+      page-size：默认当前的页容量
+      layout：布局
+      total：总条数
+     -->
+    <el-pagination
+      style="margin-top: 15px"
+      @size-change="handleSizeChange"
+      @current-change="handleCurrentChange"
+      :current-page="pagenum"
+      :page-sizes="[2, 3, 4, 5]"
+      :page-size="pagesize"
+      layout="total, sizes, prev, pager, next, jumper"
+      :total="total">
+    </el-pagination>
   </el-card>
 </template>
 
@@ -87,7 +110,16 @@
 export default {
   data() {
     return {
-      tableData: []
+      tableData: [],
+      // loading是v-loading绑定的值
+      loading: true,
+      // 分页数据
+      // 页码
+      pagenum: 1,
+      // 每页条数
+      pagesize: 2,
+      // 总条数
+      total: 0
     };
   },
   created() {
@@ -102,12 +134,15 @@ export default {
       const token = sessionStorage.getItem('token');
       // 设置请求头
       this.$http.defaults.headers.common['Authorization'] = token;
-
-      const response = await this.$http.get('users?pagenum=1&pagesize=10');
+      const response = await this.$http.get(`users?pagenum=${this.pagenum}&pagesize=${this.pagesize}`);
+      // 请求结束
+      this.loading = false;
       const {msg, status} = response.data.meta;
       // 判断获取数据是否ok
           if (status === 200) {
             this.tableData = response.data.data.users;
+            // 设置总条数total
+            this.total = response.data.data.total;
           } else {
             this.$message.error(msg);
           }
@@ -127,7 +162,19 @@ export default {
       //   .catch((err) => {
       //     console.log(err);
       //   });
-    }
+    },
+    // 分页相关方法
+    handleSizeChange(val) {
+      // 当页容量发生变化时执行 val就是当前页容量
+      this.pagesize = val;
+      this.loadData();
+        console.log(`每页 ${val} 条`);
+      },
+    handleCurrentChange(val) {
+      // 当页码发生变化时执行 val就是当前页码
+      this.pagenum = val;
+      this.loadData();
+      }
   }
 };
 </script>
