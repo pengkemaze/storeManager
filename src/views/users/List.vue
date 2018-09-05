@@ -78,9 +78,9 @@
           <!-- 通过scope.$index可以获取当前行的索引
                通过scope.row获取当前行的数据
            --> 
-          <el-button size="mini" type="primary" icon="el-icon-edit" plain></el-button>
+          <el-button @click="handleOpenEditDialog(scope.row)" size="mini" type="primary" icon="el-icon-edit" plain></el-button>
           <el-button @click="handleDelete(scope.row.id)" size="mini" type="danger" icon="el-icon-delete" plain></el-button>
-          <el-button size="mini" type="success" icon="el-icon-check" plain></el-button>
+          <el-button @click="testUser" size="mini" type="success" icon="el-icon-check" plain></el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -106,9 +106,11 @@
       :total="total">
     </el-pagination>
 
-    <!-- 添加用户的对话框 -->
-    <el-dialog @close="handleClose" title="添加用户" :visible.sync="addUserDialogFormVisible">
-  <el-form
+    <!-- 添加用户的对话框 
+      close关闭文本框事件 关闭文本框清空表单数据
+    -->
+  <el-dialog @close="handleClose" title="添加用户" :visible.sync="addUserDialogFormVisible">
+    <el-form
     ref="form"
     :rules="rules"
     label-width="80px"
@@ -125,12 +127,34 @@
     <el-form-item label="电话">
       <el-input v-model="formData.mobile" auto-complete="off"></el-input>
     </el-form-item>
-  </el-form>
-  <div slot="footer" class="dialog-footer">
+    </el-form>
+    <div slot="footer" class="dialog-footer">
     <el-button @click="addUserDialogFormVisible = false">取 消</el-button>
     <el-button type="primary" @click="handleAdd">确 定</el-button>
-  </div>
-</el-dialog>
+    </div>
+  </el-dialog>
+  <!-- 修改用户对话框 -->
+  <el-dialog @close="handleClose" title="修改用户" :visible.sync="editUserDialogFormVisible">
+    <el-form
+    ref="form"
+    :rules="rules"
+    label-width="80px"
+    :model="formData">
+    <el-form-item label="用户名" prop="username">
+      <el-input v-model="formData.username" auto-complete="off" disabled></el-input>
+    </el-form-item>
+    <el-form-item label="邮箱">
+      <el-input v-model="formData.email" auto-complete="off"></el-input>
+    </el-form-item>
+    <el-form-item label="电话">
+      <el-input v-model="formData.mobile" auto-complete="off"></el-input>
+    </el-form-item>
+    </el-form>
+    <div slot="footer" class="dialog-footer">
+    <el-button @click="editUserDialogFormVisible = false">取 消</el-button>
+    <el-button type="primary" @click="handleEdit">确 定</el-button>
+    </div>
+  </el-dialog>
   </el-card>
 </template>
 
@@ -151,6 +175,7 @@ export default {
       // 绑定搜索文本框
       searchValue: '',
       addUserDialogFormVisible: false,
+      editUserDialogFormVisible: false,
       formData: {
         username: '',
         password: '',
@@ -292,7 +317,7 @@ export default {
         // 用户添加失败
         this.$message.error(msg);
       }
-    });
+     });
     },
     // 关闭对话框的时候清空文本框内容
     handleClose() {
@@ -302,8 +327,39 @@ export default {
     for (let key in this.formData) {
       this.formData[key] = '';
       }
-    }
+    },
+    // 点击编辑按钮，打开修改用户的对话框
+    handleOpenEditDialog(user) {
+      // 打开修改用户对话框
+      this.editUserDialogFormVisible = true;
+      // 设置formdata值
+      this.formData.username = user.username;
+      this.formData.email = user.email;
+      this.formData.mobile = user.mobile;
+      // 点击编辑按钮的时候记录用户的id，点击确定按钮的时候使用
+      this.formData.id = user.id;
+    },
+    // 点击确定按钮，修改用户信息
+    async handleEdit() {
+      // users/:id mobile email
+      const response = await this.$http.put(`/users/${this.formData.id}`, {
+        email: this.formData.email,
+        mobile: this.formData.mobile
+      });
 
+      const { msg, status} = response.data.meta;
+      if(status === 200) {
+        // 成功之后
+        // 关闭对话框
+        this.editUserDialogFormVisible = false;
+        // 刷新数据
+        this.loadData();
+        // 提示
+        this.$message.success(msg);
+      } else {
+        this.$message.error(msg);
+      }
+    }
   }
 };
 </script>
