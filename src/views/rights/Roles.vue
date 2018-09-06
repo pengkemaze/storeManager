@@ -14,6 +14,7 @@
         <template slot-scope="scope">
           <!-- 一级权限 -->
           <el-row
+            class="level1"
             v-for="level1 in scope.row.children"
             :key="level1.id">
             <el-col :span="4">
@@ -28,12 +29,22 @@
                 <el-col :span="4">
                   <!-- 显示二级权限的名字 -->
                   <el-tag
+                    class="level2"
                     closable
                     type="success">
                     {{ level2.authName }}
                   </el-tag>
                 </el-col>
                 <el-col :span="20">
+                  <!-- 三级权限 -->
+                  <el-tag
+                    class="level3"
+                    closable
+                    type="warning"
+                    v-for="level3 in level2.children"
+                    :key="level3.authName">
+                    {{ level3.authName }}
+                  </el-tag>
                 </el-col>
               </el-row>
             </el-col>
@@ -96,5 +107,12 @@ export default {
 .card {
     height: 100%;
     overflow: auto;
+}
+.level1 {
+    margin-bottom: 20px;
+}
+.level3 {
+    margin-left: 5px;
+    margin-bottom: 5px;
 }
 </style>
