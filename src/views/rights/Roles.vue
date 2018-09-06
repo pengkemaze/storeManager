@@ -19,7 +19,9 @@
             :key="level1.id">
             <el-col :span="4">
               <!-- 显示一级权限的名字 -->
-              <el-tag closable>{{ level1.authName }}</el-tag>
+              <el-tag
+              closable
+              @close="handleClose(scope.row, level1.id)">{{ level1.authName }}</el-tag>
             </el-col>
             <el-col :span="20">
               <!-- 二级权限 -->
@@ -29,6 +31,7 @@
                 <el-col :span="4">
                   <!-- 显示二级权限的名字 -->
                   <el-tag
+                    @close="handleClose(scope.row, level2.id)"
                     class="level2"
                     closable
                     type="success">
@@ -38,6 +41,7 @@
                 <el-col :span="20">
                   <!-- 三级权限 -->
                   <el-tag
+                    @close="handleClose(scope.row, level3.id)"
                     class="level3"
                     closable
                     type="warning"
@@ -48,6 +52,10 @@
                 </el-col>
               </el-row>
             </el-col>
+          </el-row>
+          <!-- 未分配权限 -->
+          <el-row v-if="scope.row.children.length === 0">
+            <el-col :span="24">未分配权限</el-col>
           </el-row>
         </template>
       </el-table-column>
@@ -70,22 +78,50 @@
         <template slot-scope="scope">
           <el-button size="mini" type="primary" icon="el-icon-edit" plain></el-button>
           <el-button size="mini" type="danger" icon="el-icon-delete" plain></el-button>
-          <el-button size="mini" type="success" icon="el-icon-check" plain></el-button>
+          <el-button @click="handleOpenDialog" size="mini" type="success" icon="el-icon-check" plain></el-button>
         </template>
       </el-table-column>
     </el-table>
+    <!-- 对话框 -->
+    <el-dialog
+      title="权限分配"
+      :visible.sync="dialogVisible">
+      <!-- tree
+        data 绑定到树上的数据
+        props 告诉树上的节点要展示的属性，子节点对应的属性
+       -->
+    <el-tree
+      default-expand-all
+      show-checkbox
+      :data="data"
+      :props="defaultProps">
+    </el-tree>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="dialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="dialogVisible = false">确 定</el-button>
+     </span>
+   </el-dialog>
   </el-card>
 </template>
- 
+
 <script>
 export default {
   data() {
-      return {
-          tableData: []
-      };
+    return {
+      tableData: [],
+      //   控制对话框的显示隐藏
+      dialogVisible: false,
+      data: [],
+      defaultProps: {
+        //   树上的节点绑定对象的属性
+        label: 'authName',
+        //   对象的子节点绑定对象的属性
+        children: 'children'
+      }
+    };
   },
   created() {
-      this.loadData();
+    this.loadData();
   },
   methods: {
     //   加载表格数据
@@ -94,10 +130,32 @@ export default {
 
       const { meta: { msg, status } } = response.data;
       if (status === 200) {
-          this.tableData = response.data.data;
+        this.tableData = response.data.data;
       } else {
-          this.$message.error(msg);
+        this.$message.error(msg);
       };
+    },
+    //   删除当前角色对应的权限
+    async handleClose(role, rightId) {
+    // role 当前行对应的角色对象
+    // rightId 当前权限的id
+      const response = await this.$http.delete(`roles/${role.id}/rights/${rightId}`);
+      const { meta: { msg, status } } = response.data;
+      if (status === 200) {
+        // 删除成功
+        this.$message.success(msg);
+        // 只重新加载当前角色的权限列表
+        role.children = response.data.data;
+      } else {
+        // 删除失败
+        this.$message.error(msg);
+      }
+    },
+    async handleOpenDialog() {
+      this.dialogVisible = true;
+      //   获取所有权限tree
+      const response = await this.$http.get('rights/tree');
+      this.data = response.data.data;
     }
   }
 };
