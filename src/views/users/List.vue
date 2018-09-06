@@ -229,7 +229,7 @@ export default {
           { min: 6, max: 12, message: '长度在 6 到 12 个字符', trigger: 'blur' }
         ]
       },
-       // 绑定下拉框
+      // 绑定下拉框
       currentRoleId: -1,
       options: []
     };
@@ -418,16 +418,16 @@ export default {
       const response = await this.$http.put(`users/${this.formData.id}/role`, {
         rid: this.currentRoleId
       });
-       const {msg, status} = response.data.meta;
-        if (status === 200) {
+      const {msg, status} = response.data.meta;
+      if (status === 200) {
         // 角色设置成功
-          this.$message.success(msg);
-          // 设置弹出框的setRoleDialogFormVisible属性为false关闭弹出框
-          this.setRoleDialogFormVisible = false;
-        } else {
+        this.$message.success(msg);
+        // 设置弹出框的setRoleDialogFormVisible属性为false关闭弹出框
+        this.setRoleDialogFormVisible = false;
+      } else {
         // 角色设置失败
-          this.$message.error(msg);
-        }
+        this.$message.error(msg);
+      }
     }
 
   }
