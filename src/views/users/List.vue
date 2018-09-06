@@ -119,7 +119,7 @@
       <el-input v-model="formData.username" auto-complete="off"></el-input>
     </el-form-item>
     <el-form-item label="密码" prop="password">
-      <el-input v-model="formData.password" auto-complete="off"></el-input>
+      <el-input type="password" v-model="formData.password" auto-complete="off"></el-input>
     </el-form-item>
     <el-form-item label="邮箱">
       <el-input v-model="formData.email" auto-complete="off"></el-input>
