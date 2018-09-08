@@ -8,6 +8,7 @@ import Home from '@/views/Home';
 import Users from '@/views/users/List';
 import Rights from '@/views/rights/Rights';
 import Roles from '@/views/rights/Roles';
+import Categories from '@/views/goods/Categories';
 import { Message } from 'element-ui';
 // 注册Router插件
 Vue.use(Router);
@@ -34,6 +35,11 @@ const router = new Router({
           name: 'roles',
           path: '/roles',
           component: Roles
+        },
+        {
+          name: 'categories',
+          path: '/categories',
+          component: Categories
         }
       ]
     }
