@@ -254,6 +254,7 @@ export default {
       const {msg, status} = response.data.meta;
       // 判断获取数据是否ok
       if (status === 200) {
+        // console.log(response);
         this.tableData = response.data.data.users;
         // 设置总条数total
         // console.log(response);
