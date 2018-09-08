@@ -172,7 +172,7 @@ export default {
         level1.children.forEach(level2 => {
           level2.children.forEach(level3 => {
             arr.push(level3.id);
-          })
+          });
         });
       });
       this.checkedKeys = arr;
@@ -195,7 +195,7 @@ export default {
       });
 
       const {meta: {msg, status}} = response.data;
-      if(status === 200) {
+      if (status === 200) {
         // 成功
         this.$message.success(msg);
         this.dialogVisible = false;

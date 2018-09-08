@@ -66,9 +66,9 @@ export default {
     // 加载菜单数据
     this.loadMenus();
   },
-// 判断是否登录 
-// 需要在还没有加载到home页面之前判断是否登录
-// 所以使用钩子函数  beforeCreate
+  // 判断是否登录
+  // 需要在还没有加载到home页面之前判断是否登录
+  // 所以使用钩子函数  beforeCreate
   beforeCreate() {
   // 获取sessionStorage中存储的token
     const token = sessionStorage.getItem('token');
@@ -92,8 +92,8 @@ export default {
     // 加载菜单数据
     async loadMenus() {
       const response = await this.$http.get('menus');
-      const{ meta: {msg, status} } = response.data;
-      if(status === 200) {
+      const { meta: {msg, status} } = response.data;
+      if (status === 200) {
         this.menus = response.data.data;
       };
     }
