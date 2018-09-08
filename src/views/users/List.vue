@@ -256,6 +256,7 @@ export default {
       if (status === 200) {
         this.tableData = response.data.data.users;
         // 设置总条数total
+        // console.log(response);
         this.total = response.data.data.total;
       } else {
         this.$message.error(msg);
