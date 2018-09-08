@@ -364,7 +364,7 @@ export default {
       for (let key in this.formData) {
         this.formData[key] = '';
       }
-
+      // 重置下拉框中默认显示的项 
       this.currentRoleId = -1;
     },
     // 点击编辑按钮，打开修改用户的对话框
@@ -418,7 +418,7 @@ export default {
       const response = await this.$http.put(`users/${this.formData.id}/role`, {
         rid: this.currentRoleId
       });
-      const {msg, status} = response.data.meta;
+      const { meta: { msg, status } } = response.data;
       if (status === 200) {
         // 角色设置成功
         this.$message.success(msg);

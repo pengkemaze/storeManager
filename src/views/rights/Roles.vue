@@ -78,7 +78,7 @@
         <template slot-scope="scope">
           <el-button size="mini" type="primary" icon="el-icon-edit" plain></el-button>
           <el-button size="mini" type="danger" icon="el-icon-delete" plain></el-button>
-          <el-button @click="handleOpenDialog" size="mini" type="success" icon="el-icon-check" plain></el-button>
+          <el-button @click="handleOpenDialog(scope.row)" size="mini" type="success" icon="el-icon-check" plain></el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -91,14 +91,17 @@
         props 告诉树上的节点要展示的属性，子节点对应的属性
        -->
     <el-tree
+      ref="tree"
       default-expand-all
       show-checkbox
+      node-key="id"
+      :default-checked-keys="checkedKeys"
       :data="data"
       :props="defaultProps">
     </el-tree>
       <span slot="footer" class="dialog-footer">
         <el-button @click="dialogVisible = false">取 消</el-button>
-        <el-button type="primary" @click="dialogVisible = false">确 定</el-button>
+        <el-button type="primary" @click="handleSetRights">确 定</el-button>
      </span>
    </el-dialog>
   </el-card>
@@ -111,13 +114,17 @@ export default {
       tableData: [],
       //   控制对话框的显示隐藏
       dialogVisible: false,
+      // 绑定树的数据
       data: [],
       defaultProps: {
         //   树上的节点绑定对象的属性
         label: 'authName',
         //   对象的子节点绑定对象的属性
         children: 'children'
-      }
+      },
+      checkedKeys: [],
+      // 记录当前角色的id
+      currentRoleId: -1
     };
   },
   created() {
@@ -151,11 +158,51 @@ export default {
         this.$message.error(msg);
       }
     },
-    async handleOpenDialog() {
+    async handleOpenDialog(role) {
       this.dialogVisible = true;
       //   获取所有权限tree
       const response = await this.$http.get('rights/tree');
       this.data = response.data.data;
+      // 设置当前角色所拥有的权限被选中
+      // 当前角色role所拥有的三级权限的id
+      const arr = [];
+      // 遍历一级权限
+      role.children.forEach(level1 => {
+        // 遍历二级权限
+        level1.children.forEach(level2 => {
+          level2.children.forEach(level3 => {
+            arr.push(level3.id);
+          })
+        });
+      });
+      this.checkedKeys = arr;
+      // 记录当前角色的id
+      this.currentRoleId = role.id;
+    },
+    // 点击确定按钮，给当前角色设置权限
+    async handleSetRights() {
+      // post roles/:roleId/rights  rids权限 id列表 每个id使用，分割
+      // 获取树上选中和半选中的节点id
+      const arr1 = this.$refs.tree.getCheckedKeys();
+      const arr2 = this.$refs.tree.getHalfCheckedKeys();
+
+      const arr = [...arr1, ...arr2];
+      const rids = arr.join(',');
+      // console.log(rids);
+      // 发送请求
+      const response = await this.$http.post(`roles/${this.currentRoleId}/rights`, {
+        rids: rids
+      });
+
+      const {meta: {msg, status}} = response.data;
+      if(status === 200) {
+        // 成功
+        this.$message.success(msg);
+        this.dialogVisible = false;
+        this.loadData();
+      } else {
+        this.$message.error(msg);
+      };
     }
   }
 };
