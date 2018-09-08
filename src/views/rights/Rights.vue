@@ -66,9 +66,10 @@ export default {
   }
 };
 </script>
-<style scoped>
-.card {
-    height: 100%;
-    overflow: auto;
-}
+<style>
+/* scoped
+   scoped  是html5中提供的内容
+   scoped 范围（作用的范围）
+   当前的样式作用的范围 当前组件内 避免跟别的组件产生冲突
+ */
 </style>
