@@ -54,10 +54,11 @@
     </el-table>
    <!-- 分页组件 -->
     <el-pagination
+      style="margin-top: 10px"
       @size-change="handleSizeChange"
       @current-change="handleCurrentChange"
       :current-page="pagenum"
-      :page-sizes="[2, 20, 30, 40]"
+      :page-sizes="[10, 20, 30, 40]"
       :page-size="pagesize"
       layout="total, sizes, prev, pager, next, jumper"
       :total="total">
@@ -73,7 +74,7 @@
           <el-input v-model="form.cat_name" auto-complete="off"></el-input>
         </el-form-item>
         <el-form-item label="父级分类">
-          <!-- 多级下拉框 
+          <!-- 多级下拉框
             expand-trigger：触发的方式(hover)
             options：提供绑定的数据，是数组
             v-model：绑定的是多级分类id，是一个数组
@@ -133,7 +134,7 @@ export default {
       // 页码
       pagenum: 1,
       // 每页条数
-      pagesize: 9,
+      pagesize: 10,
       // 总条数
       total: 0,
       // 添加分类对话框的显示隐藏
@@ -157,13 +158,12 @@ export default {
   methods: {
     // 加载商品分类数据
     async loadData() {
-      const response = await this.$http.get(`categories?type=3&pagenum=${this.pagenum}$pagesize=${this.pagesize}`);
-      const { meta: { msg, status } } = response.data;
+      const response = await this.$http.get(`categories?type=3&pagenum=${this.pagenum}&pagesize=${this.pagesize}`);
+      const {msg, status} = response.data.meta;
       if (status === 200) {
-        // console.log(response);
-        this.tableData = response.data.data;
+        this.tableData = response.data.data.result;
         // 获取响应之后，设置total的值数组data的长度
-        this.total = response.data.data.length;
+        this.total = response.data.data.total;
       } else {
         this.$message.error(msg);
       }
@@ -208,7 +208,7 @@ export default {
       const response = await this.$http.post('categories', this.form);
 
       const {msg, status} = response.data.meta;
-      if(status === 201) {
+      if (status === 201) {
         // 添加成功提示
         this.$message.success(msg);
         // 关闭弹出框
@@ -218,7 +218,6 @@ export default {
       } else {
         this.$message.error(msg);
       }
-
     },
     // 点击删除按钮，删除分类
     async handleDelete(cat) {
@@ -226,25 +225,24 @@ export default {
       // 删除提示
       try {
         await this.$confirm('确认要删除当前商品分类？', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
-      });
-      // 在此处，就是promise对象的then的回调函数中执行的代码
-      // 点击完确定按钮要执行的代码
-      const response = await this.$http.delete(`categories/${cat.cat_id}`);
-      const {msg, status} = response.data.meta;
-      if (status === 200) {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        });
+        // 在此处，就是promise对象的then的回调函数中执行的代码
+        // 点击完确定按钮要执行的代码
+        const response = await this.$http.delete(`categories/${cat.cat_id}`);
+        const {msg, status} = response.data.meta;
+        if (status === 200) {
         // 删除成功
-        this.$message.success(msg);
-        this.loadData();
-      } else {
-        this.$message.error(msg);
-      }
-      } catch(err) {
+          this.$message.success(msg);
+          this.loadData();
+        } else {
+          this.$message.error(msg);
+        }
+      } catch (err) {
         // 点击了取消按钮要执行的代码
       }
-      
     },
     // 点击编辑按钮，弹出对话框，给文本框赋值
     handleOpenEditDialog(cat) {
@@ -260,7 +258,7 @@ export default {
       // 准备数据：put请求 categories/:id cat_name
       const response = await this.$http.put(`categories/${this.currentCat.cat_id}`, this.form);
       const {msg, status} = response.data.meta;
-      if(status === 200) {
+      if (status === 200) {
         this.$message.success(msg);
         this.editDialogFormVisible = false;
         // 这样的写法是将界面的currentCat对象的值重新赋值了，这时原本与currentCat同一指向的cat与它没有关联了，
@@ -270,7 +268,6 @@ export default {
       } else {
         this.$message.error(msg);
       }
-
     }
   }
 };

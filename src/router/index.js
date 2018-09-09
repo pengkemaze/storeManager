@@ -10,6 +10,7 @@ import Rights from '@/views/rights/Rights';
 import Roles from '@/views/rights/Roles';
 import Categories from '@/views/goods/Categories';
 import Goods from '@/views/goods/Goods';
+import GoodsAdd from '@/views/goods/GoodsAdd';
 import { Message } from 'element-ui';
 // 注册Router插件
 Vue.use(Router);
@@ -46,6 +47,11 @@ const router = new Router({
           name: 'goods',
           path: '/goods',
           component: Goods
+        },
+        {
+          name: 'goodsadd',
+          path: '/goods/add',
+          component: GoodsAdd
         }
       ]
     }
@@ -53,6 +59,7 @@ const router = new Router({
 });
 
 // 设置路由的前置守卫(路由跳转之前)
+// from表示从哪来 to表示到哪去 next表示让它去
 router.beforeEach((to, from, next) => {
   if (to.name === 'login') {
     next();

@@ -76,8 +76,8 @@
       <el-table-column
         label="操作">
         <template slot-scope="scope">
-          <el-button size="mini" type="primary" icon="el-icon-edit" plain></el-button>
-          <el-button size="mini" type="danger" icon="el-icon-delete" plain></el-button>
+          <el-button @click="handleEditRole(scope.row)" size="mini" type="primary" icon="el-icon-edit" plain></el-button>
+          <el-button @click="handleDelete(scope.row.id)" size="mini" type="danger" icon="el-icon-delete" plain></el-button>
           <el-button @click="handleOpenDialog(scope.row)" size="mini" type="success" icon="el-icon-check" plain></el-button>
         </template>
       </el-table-column>
@@ -203,6 +203,31 @@ export default {
       } else {
         this.$message.error(msg);
       };
+    },
+    async handleDelete(id) {
+      try {
+        await this.$confirm('确定要删除当前用户角色?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        });
+        // 下面是点击确定按钮之后执行的代码
+        // 点击确定之后，发送异步请求，删除对应数据
+        const response = await this.$http.delete(`roles/${id}`);
+        const {msg, status} = response.data.meta;
+        if (status === 200) {
+          // 删除成功
+          // 成功提示
+          this.$message.success(msg);
+          // 刷新表格数据
+          this.loadData();
+        } else {
+          // 删除失败
+          this.$message.error(msg);
+        }
+      } catch (err) {
+        // 点击取消之后执行的代码
+      }
     }
   }
 };

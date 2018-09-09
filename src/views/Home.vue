@@ -92,7 +92,7 @@ export default {
     // 加载菜单数据
     async loadMenus() {
       const response = await this.$http.get('menus');
-      const { meta: {msg, status} } = response.data;
+      const { meta: {status} } = response.data;
       if (status === 200) {
         this.menus = response.data.data;
       };
