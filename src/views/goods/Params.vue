@@ -38,7 +38,24 @@
           style="width: 100%">
           <el-table-column type="expand">
             <template slot-scope="scope">
-              hello
+              <el-tag
+                v-for="(tag, index) in scope.row.params"
+                :key="tag"
+                closable
+                @close="handleClose(scope.row.params, index, scope.row)">
+                {{ tag }}
+              </el-tag>
+
+              <el-input
+                class="input-new-tag"
+                v-if="inputVisible"
+                v-model="inputValue"
+                ref="saveTagInput"
+                size="small"
+                @keyup.enter.native="handleInputConfirm(scope.row.params)"
+                @blur="handleInputConfirm(scope.row.params)">
+              </el-input>
+              <el-button v-else class="button-new-tag" size="small" @click="showInput">+ New Tag</el-button>
             </template>
           </el-table-column>
           <el-table-column
@@ -99,36 +116,112 @@
 <script>
 export default {
   data() {
-      return {
-        options: [],
-        selectedOptions: [],
-        activeTab: 'many',
-        dynamicParams: [],
-        staticParams: []
-      };
+    return {
+      options: [],
+      selectedOptions: [],
+      activeTab: 'many',
+      dynamicParams: [],
+      staticParams: [],
+      inputVisible: false,
+      inputValue: ''
+    };
   },
   created() {
-      this.loadOptions();
+    this.loadOptions();
   },
   methods: {
     //   多级下拉发生改变的时候执行
-      handleChange() {
-
-      },
+    handleChange() {
+      this.loadParams();
+    },
     //   点击tab的时候执行
-      handleClick(tab) {
-
-      },
+    handleClick(tab) {
+      this.loadParams();
+    },
     //   加载商品分类
     async loadOptions() {
       const response = await this.$http.get('categories?type=3');
-    //   console.log(response);
+      //   console.log(response);
       this.options = response.data.data;
+    },
+    // 加载动态参数/静态参数
+    async loadParams() {
+      if (this.selectedOptions.length !== 3) {
+        this.$message.warning('请选择三级分类');
+        return;
+      }
+      const response = await this.$http.get(`categories/${this.selectedOptions[2]}/attributes?sel=${this.activeTab}`);
+      if (this.activeTab === 'many') {
+        // 动态参数
+        this.dynamicParams = response.data.data;
+        this.dynamicParams.forEach((item) => {
+        //   动态给item对象增加了一个属性params
+          const arr = item.attr_vals.length === 0 ? [] : item.attr_vals.split(',');
+          //  动态给对象增加的属性，不是响应式的数据
+          // 因为vue不会跟踪动态增加的属性值的变化
+          // 所以通过this.$set()给对象增加一个响应式的数据，vue可以跟踪到这个数据的变化
+          this.$set(item, 'params', arr);
+        });
+      } else {
+        // 静态参数赋值
+        this.staticParams = response.data.data;
+      }
+    },
+    // 点击tag的关闭按钮的时候执行
+    async handleClose(params, index, attr) {
+      console.log(attr);
+      //   从数组中把当前项删除
+      params.splice(index, 1);
+      //   console.log(params);
+      // 服务器发送请求
+      // put  categories/分类的id/attributes/参数的id
+      const response = await this.$http.put(`categories/${this.selectedOptions[2]}/attributes/${attr.attr_id}`, {
+        attr_name: attr.attr_name,
+        attr_sel: attr.attr_sel,
+        attr_vals: params.join(',')
+      });
+      attr.attr_vals = params.join(',');
+      const {msg, status} = response.data.meta;
+      if (status === 200) {
+        this.$message.success(msg);
+      } else {
+        this.$message.error(msg);
+      }
+    },
+
+    handleInputConfirm(params) {
+      let inputValue = this.inputValue;
+      if (inputValue) {
+        params.push(inputValue);
+      }
+      this.inputVisible = false;
+      this.inputValue = '';
+    },
+    showInput() {
+      this.inputVisible = true;
+    //   $nextTick方法：等待下一次界面更新的时候，文本框才能获取焦点
+      this.$nextTick(() => {
+        this.$refs.saveTagInput.$refs.input.focus();
+      });
     }
   }
 };
 </script>
 
-<style>
-
+<style scoped>
+.el-tag + .el-tag {
+    margin-left: 10px;
+}
+.button-new-tag {
+  margin-left: 10px;
+  height: 32px;
+  line-height: 30px;
+  padding-top: 0;
+  padding-bottom: 0;
+}
+.input-new-tag {
+  width: 90px;
+  margin-left: 10px;
+  vertical-align: bottom;
+}
 </style>

@@ -118,12 +118,12 @@
 import 'quill/dist/quill.core.css';
 import 'quill/dist/quill.snow.css';
 import 'quill/dist/quill.bubble.css';
-import { quillEditor } from 'vue-quill-editor'; 
+import { quillEditor } from 'vue-quill-editor';
 export default {
 //   注册quillEditor组件局部组件
-components: {
+  components: {
     quillEditor
-},
+  },
   data() {
     return {
       // active是步骤条的步骤索引
@@ -217,7 +217,7 @@ components: {
     //   把图片从formData.pics中移除
       const index = this.formData.pics.findIndex((item) => {
         //   findIndex找的是满足条件的那一项的索引
-          return item.pic === file.response.data.tmp_path;
+        return item.pic === file.response.data.tmp_path;
       });
       this.formData.pics.splice(index, 1);
     //   console.log(this.formData.pics);
@@ -237,33 +237,33 @@ components: {
     async handleAdd() {
     // goods_cat分类的id列表
       this.formData.goods_cat = this.selectedOptions.join(',');
-    // attrs分类参数
+      // attrs分类参数
       const arr1 = this.staticParams.map((item) => {
-    // 回调函数返回的结果，组成一个新的数组返回
-      return {
-        attr_id: item.attr_id,
-        attr_value: item.attr_vals
-    }
-    });
+        // 回调函数返回的结果，组成一个新的数组返回
+        return {
+          attr_id: item.attr_id,
+          attr_value: item.attr_vals
+        };
+      });
 
-     const arr2 = this.staticParams.map((item) => {
-    // 回调函数返回的结果，组成一个新的数组返回
-      return {
-        attr_id: item.attr_id,
-        attr_value: item.attr_vals.join(',')
-     }
-    });
-    this.formData.attrs = [...arr1, ...arr2];
+      const arr2 = this.staticParams.map((item) => {
+        // 回调函数返回的结果，组成一个新的数组返回
+        return {
+          attr_id: item.attr_id,
+          attr_value: item.attr_vals.join(',')
+        };
+      });
+      this.formData.attrs = [...arr1, ...arr2];
 
-    const response = await this.$http.post('goods', this.formData);
-    const {msg, status} = response.data.meta;
-    if(status === 201) {
+      const response = await this.$http.post('goods', this.formData);
+      const {msg, status} = response.data.meta;
+      if (status === 201) {
         // 成功
         this.$message.success(msg);
         this.$router.push('/goods');
-    } else {
+      } else {
         this.$message.error(msg);
-    }
+      }
     }
   }
 };
