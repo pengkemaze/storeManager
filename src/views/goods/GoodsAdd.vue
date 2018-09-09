@@ -103,14 +103,27 @@
               <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>
             </el-upload>
           </el-tab-pane>
-          <el-tab-pane label="商品内容">商品内容</el-tab-pane>
+          <el-tab-pane label="商品内容">
+            <el-button @click="handleAdd">添加商品</el-button>
+            <quill-editor
+              v-model="formData.goods_instroduce">
+            </quill-editor>
+          </el-tab-pane>
         </el-tabs>
       </el-form>
     </el-card>
 </template>
 
 <script>
+import 'quill/dist/quill.core.css';
+import 'quill/dist/quill.snow.css';
+import 'quill/dist/quill.bubble.css';
+import { quillEditor } from 'vue-quill-editor'; 
 export default {
+//   注册quillEditor组件局部组件
+components: {
+    quillEditor
+},
   data() {
     return {
       // active是步骤条的步骤索引
@@ -122,7 +135,9 @@ export default {
         goods_number: '',
         // 用逗号分隔的分类列表id
         goods_cat: '',
-        pics: []
+        pics: [],
+        goods_instroduce: '',
+        attrs: []
       },
       // 绑定多级下拉的数据
       options: [],
@@ -152,6 +167,9 @@ export default {
 
       // 如果当前的标签页是商品参数/商品属性
       if (tab.index === '1' || tab.index === '2') {
+        //   清空静态参数和动态参数
+        this.dynamicParams.length = 0;
+        this.staticParams.length = 0;
         // 判断当前的多级下拉中是否选择了3级分类
         if (this.selectedOptions.length < 3) {
           this.$message.warning('请选择商品的三级分类');
@@ -188,28 +206,73 @@ export default {
     // 多级下拉选中的内容发生变化的时候执行
     handleChange() {
       // 判断当前选择的是否是3级分类
-      if (this.selectedOptions.length !== 3) {
+      if (this.selectedOptions.length !== 3 && this.selectedOptions.length !== 0) {
         this.$message.warning('请选择三级分类');
       }
     },
     // 上传图片使用的方法
     handleRemove(file, fileList) {
-      console.log(file);
-      console.log(fileList);
+    //   console.log(file);
+    //   console.log(fileList);
+    //   把图片从formData.pics中移除
+      const index = this.formData.pics.findIndex((item) => {
+        //   findIndex找的是满足条件的那一项的索引
+          return item.pic === file.response.data.tmp_path;
+      });
+      this.formData.pics.splice(index, 1);
+    //   console.log(this.formData.pics);
     },
     handleSuccess(response, file, fileList) {
-      // 服务器返回的数据
-      console.log(response);
-      // 上传的文件对象
-      console.log(file);
-      // 数组，包含了file
-      console.log(fileList);
+      // 设置formData中的pics
+      //   pics需要的格式如下：
+    //   "pics": [
+    //      {"pic": "/tmp_uploads/文件路径"}
+    //   ]
+    //   console.log(response);
+      this.formData.pics.push({
+        pic: response.data.tmp_path
+      });
+    },
+    // 添加商品
+    async handleAdd() {
+    // goods_cat分类的id列表
+      this.formData.goods_cat = this.selectedOptions.join(',');
+    // attrs分类参数
+      const arr1 = this.staticParams.map((item) => {
+    // 回调函数返回的结果，组成一个新的数组返回
+      return {
+        attr_id: item.attr_id,
+        attr_value: item.attr_vals
+    }
+    });
+
+     const arr2 = this.staticParams.map((item) => {
+    // 回调函数返回的结果，组成一个新的数组返回
+      return {
+        attr_id: item.attr_id,
+        attr_value: item.attr_vals.join(',')
+     }
+    });
+    this.formData.attrs = [...arr1, ...arr2];
+
+    const response = await this.$http.post('goods', this.formData);
+    const {msg, status} = response.data.meta;
+    if(status === 201) {
+        // 成功
+        this.$message.success(msg);
+        this.$router.push('/goods');
+    } else {
+        this.$message.error(msg);
+    }
     }
   }
 };
 </script>
 
 <style>
+.ql-editor {
+    height: 400px;
+}
 .el-step__title {
     font-size: 12px;
 }
