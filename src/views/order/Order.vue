@@ -90,40 +90,39 @@
 import cityData from './city_data2017_element.js';
 export default {
   data() {
-      return {
-        tableData: [],
-        // 当前页
-        pagenum: 1,
-        pagesize: 10,
-        total: 0,
-        dialogFormVisible: false,
-        form: {
+    return {
+      tableData: [],
+      // 当前页
+      pagenum: 1,
+      pagesize: 10,
+      total: 0,
+      dialogFormVisible: false,
+      form: {
 
-        },
-        options: [],
-        selectedOptions: []
-      };
+      },
+      options: [],
+      selectedOptions: []
+    };
   },
   created() {
-      this.loadData();
+    this.loadData();
   },
   methods: {
     //   加载数据
-      async loadData() {
-        const response = await this.$http.get(`orders?pagenum=${this.pagenum}&pagesize=${this.pagesize}`);
-        const { msg, status } = response.data.meta;
-        if(status  === 200) {
-            // 成功
-            console.log(response);
-            this.tableData = response.data.data.goods;
-            this.total = response.data.data.total;
-        } else {
-            // 失败
-            this.$message.error(msg);
-        }
-        
-      },
-      // 分页方法
+    async loadData() {
+      const response = await this.$http.get(`orders?pagenum=${this.pagenum}&pagesize=${this.pagesize}`);
+      const { msg, status } = response.data.meta;
+      if (status === 200) {
+        // 成功
+        console.log(response);
+        this.tableData = response.data.data.goods;
+        this.total = response.data.data.total;
+      } else {
+        // 失败
+        this.$message.error(msg);
+      }
+    },
+    // 分页方法
     // 每页显示多少条
     handleSizeChange(val) {
       this.pagesize = val;
@@ -138,9 +137,9 @@ export default {
     },
     // 打开对话框
     handleOpenDialog() {
-        this.dialogFormVisible = true;
-        // 加载省市数据
-        this.options = cityData;
+      this.dialogFormVisible = true;
+      // 加载省市数据
+      this.options = cityData;
     }
   }
 };

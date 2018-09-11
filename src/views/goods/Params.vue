@@ -199,7 +199,7 @@ export default {
     },
     showInput() {
       this.inputVisible = true;
-    //   $nextTick方法：等待下一次界面更新的时候，文本框才能获取焦点
+      //   $nextTick方法：等待下一次界面更新的时候，文本框才能获取焦点
       this.$nextTick(() => {
         this.$refs.saveTagInput.$refs.input.focus();
       });
