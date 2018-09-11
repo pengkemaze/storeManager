@@ -35,13 +35,13 @@ MyHttp.install = function (Vue) {
     loadingInstance.close();
 
     // 2.统一处理获取相应数据，判断获取数据成功还是失败
-    // const {msg: {msg, status}} = response.data;
-    // if (status === 200 || status === 201) {
-    //   // 成功
-    // } else {
-    //   // 失败
-    //   Message.error(msg);
-    // }
+    const {meta: {msg, status}} = response.data;
+    if (status === 200 || status === 201) {
+      // 成功
+    } else {
+      // 失败
+      Message.error(msg);
+    }
     // Do something with response data
     return response;
   }, function (error) {

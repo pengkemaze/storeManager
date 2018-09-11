@@ -201,7 +201,7 @@ export default {
       // 页码
       pagenum: 1,
       // 每页条数
-      pagesize: 2,
+      pagesize: 5,
       // 总条数
       total: 0,
       // 绑定搜索文本框
@@ -245,23 +245,16 @@ export default {
       // 请求开始只要请求就要先loading加载
       this.loading = true;
       // 设置token
-      const token = sessionStorage.getItem('token');
+      // const token = sessionStorage.getItem('token');
       // 设置请求头
-      this.$http.defaults.headers.common['Authorization'] = token;
+      // this.$http.defaults.headers.common['Authorization'] = token;
       const response = await this.$http.get(`users?pagenum=${this.pagenum}&pagesize=${this.pagesize}&query=${this.searchValue}`);
+      console.log(response);
       // 请求结束
       this.loading = false;
-      const {msg, status} = response.data.meta;
-      // 判断获取数据是否ok
-      if (status === 200) {
-        // console.log(response);
-        this.tableData = response.data.data.users;
-        // 设置总条数total
-        // console.log(response);
-        this.total = response.data.data.total;
-      } else {
-        this.$message.error(msg);
-      }
+      this.tableData = response.data.data.users;
+      this.total = response.data.data.total;
+
       // 异步请求原始写法
       // this.$http
       //   .get('users?pagenum=1&pagesize=10')
@@ -296,7 +289,7 @@ export default {
     },
     // 删除用户
     handleDelete(id) {
-      this.$confirm('此操作将永久删除该文件, 是否继续?', '提示', {
+      this.$confirm('此操作将永久删除该用户, 是否继续?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'

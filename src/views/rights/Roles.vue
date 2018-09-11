@@ -134,13 +134,14 @@ export default {
     //   加载表格数据
     async loadData() {
       const response = await this.$http.get('roles');
+      this.tableData = response.data.data;
 
-      const { meta: { msg, status } } = response.data;
-      if (status === 200) {
-        this.tableData = response.data.data;
-      } else {
-        this.$message.error(msg);
-      };
+      // const { meta: { msg, status } } = response.data;
+      // if (status === 200) {
+      //   this.tableData = response.data.data;
+      // } else {
+      //   this.$message.error(msg);
+      // };
     },
     //   删除当前角色对应的权限
     async handleClose(role, rightId) {
