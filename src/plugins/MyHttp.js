@@ -1,6 +1,6 @@
 // 封装axios调用接口的插件
 import axios from 'axios';
-import { Loading } from 'element-ui';
+import { Loading, Message } from 'element-ui';
 // 创建一个MyHttp对象
 const MyHttp = {};
 // vue的插件,必须有一个公共的install方法
@@ -31,8 +31,17 @@ MyHttp.install = function (Vue) {
   // Add a response interceptor
   // 添加响应的拦截器
   axios.interceptors.response.use(function (response) {
-    // 隐藏加载显示
+    // 1.隐藏加载显示
     loadingInstance.close();
+
+    // 2.统一处理获取相应数据，判断获取数据成功还是失败
+      // const {msg: {msg, status}} = response.data;
+      // if (status === 200 || status === 201) {
+      //   // 成功
+      // } else {
+      //   // 失败
+      //   Message.error(msg);
+      // }
     // Do something with response data
     return response;
   }, function (error) {

@@ -1,5 +1,6 @@
 import Vue from 'vue';
 import Router from 'vue-router';
+import { Message } from 'element-ui';
 // 为什么可以省略掉 .vue
 // 加载一个模块的时候，如果省略后缀名，默认情况下 先加载.js, 如果找不到 再加载 .json
 // 默认情况可以修改  在webpack.base.conf的35行设置
@@ -12,7 +13,9 @@ import Categories from '@/views/goods/Categories';
 import Goods from '@/views/goods/Goods';
 import GoodsAdd from '@/views/goods/GoodsAdd';
 import Params from '@/views/goods/Params';
-import { Message } from 'element-ui';
+import Order from '@/views/order/Order';
+import Reports from '@/views/reports/Reports';
+
 // 注册Router插件
 Vue.use(Router);
 const router = new Router({
@@ -58,6 +61,16 @@ const router = new Router({
           name: 'params',
           path: '/params',
           component: Params
+        },
+        {
+          name: 'order',
+          path: '/orders',
+          component: Order
+        },
+        {
+          name: 'reports',
+          path: '/reports',
+          component: Reports
         }
       ]
     }
