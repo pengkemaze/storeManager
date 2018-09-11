@@ -4,17 +4,18 @@ import { Message } from 'element-ui';
 // 为什么可以省略掉 .vue
 // 加载一个模块的时候，如果省略后缀名，默认情况下 先加载.js, 如果找不到 再加载 .json
 // 默认情况可以修改  在webpack.base.conf的35行设置
-import Login from '@/views/Login';
-import Home from '@/views/Home';
-import Users from '@/views/users/List';
-import Rights from '@/views/rights/Rights';
-import Roles from '@/views/rights/Roles';
-import Categories from '@/views/goods/Categories';
-import Goods from '@/views/goods/Goods';
-import GoodsAdd from '@/views/goods/GoodsAdd';
-import Params from '@/views/goods/Params';
-import Order from '@/views/order/Order';
-import Reports from '@/views/reports/Reports';
+// 改造路由懒加载
+const Login = () => import('@/views/Login');
+const Home = () => import('@/views/Home');
+const Users = () => import('@/views/users/List');
+const Rights = () => import('@/views/rights/Rights');
+const Roles = () => import('@/views/rights/Roles');
+const Categories = () => import('@/views/goods/Categories');
+const Goods = () => import('@/views/goods/Goods');
+const GoodsAdd = () => import('@/views/goods/GoodsAdd');
+const Params = () => import('@/views/goods/Params');
+const Order = () => import('@/views/order/Order');
+const Reports = () => import('@/views/reports/Reports');
 
 // 注册Router插件
 Vue.use(Router);

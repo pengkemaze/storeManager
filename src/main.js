@@ -22,9 +22,12 @@ Vue.use(MyHttp);
 Vue.use(ElementUI);
 Vue.config.productionTip = false;
 // 实例化vue对象
-new Vue({
+let vm = new Vue({
   el: '#app',
   router,
   components: { App },
   template: '<App/>'
+});
+Vue.use({
+  vm
 });
